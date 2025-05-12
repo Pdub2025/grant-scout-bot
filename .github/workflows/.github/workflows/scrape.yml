@@ -1,0 +1,25 @@
+name: Run Grant Scraper Daily
+
+on:
+  schedule:
+    - cron: "0 14 * * *"  # Runs daily at 2 PM UTC
+  workflow_dispatch:      # Allows manual run from GitHub UI
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: pip install beautifulsoup4 requests
+
+    - name: Run grant scraper
+      run: python grant_scraper.py
