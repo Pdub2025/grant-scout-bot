@@ -10,8 +10,8 @@ SOURCES = {
     "Grants.gov Search - EV": "https://www.grants.gov/search-results.html?keywords=EV%20charging",
     "USDOT EV Infrastructure": "https://www.transportation.gov/rural/ev-toolkit",
     "USDA Rural Development": "https://www.rd.usda.gov/programs-services/electric-programs",
-    "FHWA NEVI Program": "https://www.fhwa.dot.gov/environment/alternative_fuel_corridors/ev/
-"}
+    "FHWA NEVI Program": "https://www.fhwa.dot.gov/environment/alternative_fuel_corridors/ev/"
+}
 
 KEYWORDS = ["EV charging", "rural", "infrastructure", "NEVI", "funding"]
 
