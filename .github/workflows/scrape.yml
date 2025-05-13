@@ -19,7 +19,9 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install beautifulsoup4 requests
+        run: |
+          pip install beautifulsoup4 requests gspread oauth2client
+
 
       - name: Run grant scraper
         run: python multi_source_scraper.py
