@@ -24,7 +24,7 @@ jobs:
       - name: Run grant scraper
         run: python grant_scraper.py
 
-              - name: Upload results as artifact
+      - name: Upload results as artifact
         uses: actions/upload-artifact@v3
         with:
           name: grant-results
