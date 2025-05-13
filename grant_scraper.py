@@ -32,3 +32,4 @@ with open(filename, "w") as f:
 
 print(f"Scraping complete. Saved {len(matches)} matches to {filename}")
 print("Current directory contents:", os.listdir())
+print("\n--- GRANT RESULTS ---\n" + "\n".join(matches))
