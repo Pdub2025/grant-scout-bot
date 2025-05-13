@@ -5,6 +5,27 @@ import datetime
 import os
 from urllib.parse import urljoin
 from collections import defaultdict
+import gspread
+import json
+from oauth2client.service_account import ServiceAccountCredentials
+
+# Load Google credentials from environment
+creds_json = os.environ.get("GOOGLE_SHEETS_CREDS")
+if creds_json is None:
+    raise ValueError("Missing GOOGLE_SHEETS_CREDS environment variable.")
+creds_dict = json.loads(creds_json)
+
+scope = [
+    "https://spreadsheets.google.com/feeds",
+    "https://www.googleapis.com/auth/drive"
+]
+credentials = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+gc = gspread.authorize(credentials)
+
+# Open the target Google Sheet
+sheet = gc.open("Grant Scouting Results").sheet1
+sheet.clear()
+sheet.append_row(["Date", "Source", "Priority", "Title", "URL"])
 
 # Define grant source URLs
 SOURCES = {
@@ -21,6 +42,7 @@ PRIORITY_TERMS = ["rural", "NEVI", "deadline", "now open", "application"]
 results = []
 summary = defaultdict(int)
 priority_count = 0
+now = datetime.datetime.now().strftime("%Y-%m-%d")
 
 for source_name, base_url in SOURCES.items():
     try:
@@ -38,29 +60,18 @@ for source_name, base_url in SOURCES.items():
 
             if any(kw.lower() in text.lower() for kw in KEYWORDS):
                 full_link = urljoin(base_url, href)
-
-                # Highlight priority terms
                 is_priority = any(term in text.lower() for term in PRIORITY_TERMS)
-                if is_priority:
-                    results.append(f"[{source_name}] ⭐ {text} - {full_link}")
-                    priority_count += 1
-                else:
-                    results.append(f"[{source_name}] {text} - {full_link}")
+                priority_flag = "⭐" if is_priority else ""
 
+                results.append(f"[{source_name}] {priority_flag} {text} - {full_link}")
                 summary[source_name] += 1
+                if is_priority:
+                    priority_count += 1
+
+                sheet.append_row([now, source_name, priority_flag, text, full_link])
 
     except Exception as e:
         results.append(f"[{source_name}] ERROR: {str(e)}")
-
-# Always write results
-now = datetime.datetime.now().strftime("%Y-%m-%d")
-filename = f"multi_grant_results_{now}.txt"
-
-with open(filename, "w", encoding="utf-8") as f:
-    if results:
-        f.write("\n".join(results))
-    else:
-        f.write("No matches found.")
 
 # Print summary
 print(f"Scraping complete. {len(results)} items found across sources.\n")
