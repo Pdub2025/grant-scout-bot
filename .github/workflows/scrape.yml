@@ -25,6 +25,9 @@ jobs:
 
       - name: Run grant scraper
         run: python multi_source_scraper.py
+        env:
+          GOOGLE_SHEETS_CREDS: ${{ secrets.GOOGLE_SHEETS_CREDS }}
+
 
 
 #     - name: Upload results as artifact
