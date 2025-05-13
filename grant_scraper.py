@@ -2,19 +2,18 @@
 import requests
 from bs4 import BeautifulSoup
 import datetime
+import os
 
-# Target URL (you can add more later)
+# Target URL
 URL = "https://www.energy.gov/bil/ev-charging-programs"
 KEYWORDS = ["EV charging", "rural", "infrastructure", "NEVI", "funding"]
 
-# Fetch the webpage
+# Fetch and parse page
 response = requests.get(URL)
 soup = BeautifulSoup(response.text, 'html.parser')
-
-# Find all links
 links = soup.find_all('a')
 
-# Store matches
+# Search for keyword matches
 matches = []
 for link in links:
     text = link.get_text().strip()
@@ -22,12 +21,14 @@ for link in links:
     if any(kw.lower() in text.lower() for kw in KEYWORDS):
         matches.append(f"{text} - {href}")
 
-# Save results to a file
+# Always create the output file
 now = datetime.datetime.now().strftime("%Y-%m-%d")
-with open(f"grant_results_{now}.txt", "w") as f:
+filename = f"grant_results_{now}.txt"
+with open(filename, "w") as f:
     if matches:
         f.write("\n".join(matches))
     else:
         f.write("No matches found.")
 
-print("Scraping complete. Results saved.")
+print(f"Scraping complete. Saved {len(matches)} matches to {filename}")
+print("Current directory contents:", os.listdir())
