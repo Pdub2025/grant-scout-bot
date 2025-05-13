@@ -23,7 +23,7 @@ credentials = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope
 gc = gspread.authorize(credentials)
 
 # Open the target Google Sheet
-sheet = gc.open("Grant Scouting Results").sheet1
+sheet = gc.open("EV Grant Scouting Results").sheet1
 sheet.clear()
 sheet.append_row(["Date", "Source", "Priority", "Title", "URL"])
 
