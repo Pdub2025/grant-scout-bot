@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import datetime
 import os
 from urllib.parse import urljoin
+from collections import defaultdict
 
 # Define grant source URLs
 SOURCES = {
@@ -15,8 +16,11 @@ SOURCES = {
 }
 
 KEYWORDS = ["EV charging", "rural", "infrastructure", "NEVI", "funding"]
+PRIORITY_TERMS = ["rural", "NEVI", "deadline", "now open", "application"]
 
 results = []
+summary = defaultdict(int)
+priority_count = 0
 
 for source_name, base_url in SOURCES.items():
     try:
@@ -34,7 +38,16 @@ for source_name, base_url in SOURCES.items():
 
             if any(kw.lower() in text.lower() for kw in KEYWORDS):
                 full_link = urljoin(base_url, href)
-                results.append(f"[{source_name}] {text} - {full_link}")
+
+                # Highlight priority terms
+                is_priority = any(term in text.lower() for term in PRIORITY_TERMS)
+                if is_priority:
+                    results.append(f"[{source_name}] ⭐ {text} - {full_link}")
+                    priority_count += 1
+                else:
+                    results.append(f"[{source_name}] {text} - {full_link}")
+
+                summary[source_name] += 1
 
     except Exception as e:
         results.append(f"[{source_name}] ERROR: {str(e)}")
@@ -50,5 +63,10 @@ with open(filename, "w", encoding="utf-8") as f:
         f.write("No matches found.")
 
 # Print summary
-print(f"Scraping complete. {len(results)} items found across sources.")
-print("\n--- GRANT RESULTS ---\n" + "\n".join(results))
+print(f"Scraping complete. {len(results)} items found across sources.\n")
+print("--- SUMMARY ---")
+for source, count in summary.items():
+    print(f"{source}: {count} match(es)")
+print(f"\nPriority items flagged: {priority_count}\n")
+
+print("--- GRANT RESULTS ---\n" + "\n".join(results))
