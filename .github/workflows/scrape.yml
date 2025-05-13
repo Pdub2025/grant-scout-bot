@@ -22,7 +22,8 @@ jobs:
         run: pip install beautifulsoup4 requests
 
       - name: Run grant scraper
-        run: python grant_scraper.py
+        run: python multi_source_scraper.py
+
 
 #     - name: Upload results as artifact
 #       uses: actions/upload-artifact@v3
